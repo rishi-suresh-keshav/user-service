@@ -1,32 +1,40 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/rishi-suresh-keshav/user-service/lib/repository"
-	"github.com/rishi-suresh-keshav/user-service/lib/routes"
-	"log"
+	"github.com/rishi-suresh-keshav/user-service/config"
+	"github.com/rishi-suresh-keshav/user-service/handlers"
+	"github.com/rishi-suresh-keshav/user-service/routes"
 	"net/http"
 )
 
-//var db *gorm.DB
+const (
+	dbName = "user"
+	dbPass = ""
+	dbHost = "localhost"
+	dbPort = "3306"
+)
 
 func main() {
+	//dbName := os.Getenv("DB_NAME")
+	//dbPass := os.Getenv("DB_PASS")
+	//dbHost := os.Getenv("DB_HOST")
+	//dbPort := os.Getenv("DB_PORT")
+
+	println("this is db", dbName, dbHost, dbPass, dbPort)
+
+	connection, err := config.ConnectSQL(dbHost, dbPort, "root", dbPass, dbName)
+	if err != nil {
+		fmt.Println(err)
+		//os.Exit(-1)
+	}
+
+	uHandler := handlers.NewUserHandler(connection)
 	router := mux.NewRouter()
-	route.RegisterAllRoutes(router)
+	route.RegisterAllRoutes(router, uHandler)
 	http.Handle("/", router)
 
-	initDBConnection()
-
-	err := http.ListenAndServe(":8080", router)
-	if err != nil {
-		log.Fatal("Something went wrong listening to 8080. ", err)
-	}
-	log.Println("Server is listening at port 8080")
-}
-
-func initDBConnection() {
-	//config.Connect()
-	//db = config.GetDB()
-
-	repository.InitDatabaseConnect()
+	fmt.Println("Server listen at :8080")
+	http.ListenAndServe(":8080", router)
 }
