@@ -12,7 +12,7 @@ import (
 const (
 	dbName = "user"
 	dbPass = ""
-	dbHost = "localhost"
+	dbHost = "docker.for.mac.localhost" // Weird Docker issue for local https://stackoverflow.com/questions/52504318/unable-to-connect-to-mysql-server-with-go-and-docker-dial-tcp-127-0-0-13306
 	dbPort = "3306"
 )
 
